@@ -12,11 +12,11 @@ var dbutil = require('./dbutil');
  * @param {function} success 成功回调
  * @param {function} fail 插入失败回调
  */
-function insertIntoRegister (account,sex,nickname,birthday,password,ctime,imgpath,success,fail) {
-    var params = [account,sex,nickname,birthday,password,ctime,imgpath];
+function insertIntoRegister (account,sex,nickname,birthday,password,ctime,imgpath,region,city,success,fail) {
+    var params = [account,sex,nickname,birthday,password,ctime,imgpath,region,city];
     var createConnect = dbutil.createConnect();
     createConnect.connect();
-    var sql = 'insert into register (account,sex,nickname,birthday,password,ctime,imgpath) values (?,?,?,?,?,?,?)'
+    var sql = 'insert into register (account,sex,nickname,birthday,password,ctime,imgpath,region,city) values (?,?,?,?,?,?,?,?,?)'
     createConnect.query(sql,params,function (error,result) {
         if (!error) {
             success(result);
@@ -66,6 +66,29 @@ function getUserInfoByAccount(account,success,fail) {
     createConnect.end();
 }
 /**
+ * 根据粉丝量排序查询
+ * @param {*} start 
+ * @param {*} limit 
+ * @param {*} success 
+ * @param {*} fail 
+ */
+function getRankingList(start,limit,success,fail) {
+    var sql = 'select * from register order by fans DESC limit ' + start + ',' + limit;
+    var createConnect = dbutil.createConnect();
+    createConnect.connect();
+    createConnect.query(sql,function (error,result) {
+        if (!error) {
+            success(result);
+        } else {
+            if (fail) fail(error)
+        }
+    })
+    createConnect.end();
+}
+
+
+
+/**
  * 根据账号进行更新当前账号的粉丝量
  * @param {*} account 
  * @param {*} fans 
@@ -77,6 +100,27 @@ function updateFansByAccount(account,fans,success,fail) {
     var createConnect = dbutil.createConnect();
     createConnect.connect();
     createConnect.query(sql,function (error,result) {
+        if (!error) {
+            success(result);
+        } else {
+            if (fail) fail(error)
+        }
+    })
+    createConnect.end();
+} 
+/**
+ * 根据账号更新昵称
+ * @param {*} account 
+ * @param {*} nickname 
+ * @param {*} success 
+ * @param {*} fail 
+ */
+function updateNicknameByAccount(account,nickname,success,fail) {
+    var params = [nickname,account]
+    var sql = 'UPDATE register SET nickname = ? WHERE account = ?';
+    var createConnect = dbutil.createConnect();
+    createConnect.connect();
+    createConnect.query(sql,params,function (error,result) {
         if (!error) {
             success(result);
         } else {
@@ -133,10 +177,11 @@ function updateBirthdayByAccount(account,birthday,success,fail) {
  * @param {*} fail 
  */
 function updateImgpathByAccount(account,imgpath,success,fail) {
-    var sql = 'UPDATE register SET imgpath=' + imgpath + ' WHERE account=' + account;
+    var params = [imgpath,account]
+    var sql = 'UPDATE register SET imgpath = ? WHERE account = ?';
     var createConnect = dbutil.createConnect();
     createConnect.connect();
-    createConnect.query(sql,function (error,result) {
+    createConnect.query(sql,params,function (error,result) {
         if (!error) {
             success(result);
         } else {
@@ -171,8 +216,10 @@ module.exports = {
     insertIntoRegister,
     queryRegisterByAccount,
     getUserInfoByAccount,
+    getRankingList,
     updateFansByAccount,
     updateSexByAccount,
+    updateNicknameByAccount,
     updateBirthdayByAccount,
     updateImgpathByAccount,
     updateLocationByAccount

@@ -69,11 +69,13 @@ function getDynamicInfo(start,dataNum,success,fail) {
 /**
  * 根据账号进行查询所有数据
  * @param {*} account 
+ *  @param {*} start 
+ *  @param {*} limit 
  * @param {*} success 
  * @param {*} fail 
  */
-function getAllDynamicInfoByAccount(account,success,fail) {
-    var sql = 'select * from dynamic where account=' + account;
+function getAllDynamicInfoByAccount(account,start,limit,success,fail) {
+    var sql = 'select * from dynamic where account=' + account + ' order by ctime desc limit ' + start+ ',' + limit;
     var createConnect = dbutils.createConnect();
     createConnect.connect(); 
     createConnect.query(sql,function (error,result) {
@@ -86,6 +88,28 @@ function getAllDynamicInfoByAccount(account,success,fail) {
 
     createConnect.end();
 }
+/**
+ * 根据账号进行查询说说数量
+ * @param {*} account 
+ * @param {*} success 
+ * @param {*} fail 
+ */
+function getDynamicNumByAccount(account,success,fail) {
+    var sql = 'select count(*) as count from dynamic where account=' + account;
+    var createConnect = dbutils.createConnect();
+    createConnect.connect(); 
+    createConnect.query(sql,function (error,result) {
+        if (!error) {
+            success(result);
+        } else {
+            if (fail) fail(error);
+        }
+    })
+
+    createConnect.end();
+}
+
+
 /**
  * 根据id单独删除某一条说说
  * @param {*} id 
@@ -192,6 +216,7 @@ module.exports = {
     insertIntoDynamic,
     getOneDynamicInfoById,
     getAllDynamicInfoByAccount,
+    getDynamicNumByAccount,
     getDynamicInfo,
     deleteOneDynamicInfoById,
     deleteAllDynamicInfoByAccount,
