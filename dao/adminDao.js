@@ -1,3 +1,11 @@
+/*
+ * @Description: 
+ * @version: 
+ * @Author: Zhikang Fan
+ * @Date: 2020-04-03 06:47:34
+ * @LastEditors: Zhikang Fan
+ * @LastEditTime: 2020-04-03 08:40:39
+ */
 var dbutils = require('./dbutil.js');
 /**
  * 注册管理员

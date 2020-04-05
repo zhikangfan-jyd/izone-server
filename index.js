@@ -178,8 +178,10 @@ app.post('/api/dynamicImg',upload.array('file'),function (request,response) {
 // 处理要写入客户端说说的详细信息
 app.post('/api/dynamicInfo',function (request,response) {
     var resultData = {};
+    
     request.on('data',function (data) {
         var data = JSON.parse(data.toString());
+        // console.log(data);
         data.ctime = new Date().getTime();
         dynamic.insertIntoDynamic(data.account,data.content,data.ctime,data.region,data.city,success,fail)
     })
@@ -193,6 +195,7 @@ app.post('/api/dynamicInfo',function (request,response) {
     }
     //写入失败
     function fail(err) {
+        console.log(err);
         response.writeHead(200);
         resultData.type = 'fail';
         response.write(JSON.stringify(resultData));
